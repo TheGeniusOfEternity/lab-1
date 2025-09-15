@@ -12,6 +12,10 @@
             font-family: "Lutsk Sity";
             src: url("fonts/Lutsk-type-14-12-17.ttf") format("truetype");
         }
+        @font-face {
+            font-family: "Montserrat";
+            src: url("fonts/Montserrat-Regular.ttf") format("truetype");
+        }
         body, html {
             margin: 0;
             padding: 0;
@@ -21,10 +25,10 @@
             header {
                 display: grid;
                 grid-template-columns: 6.5fr 2.3fr 0.4fr 2.3fr;
-                padding: 2vh 15vw;
+                padding: 2vh 5vw;
 
                 h3 {
-                    font-family: "Steamy", sans-serif;
+                    font-family: "Montserrat", sans-serif;
                     color: #7209b7;
                     font-size: 2.5vh;
                     padding: 2vh 2vw;
@@ -43,12 +47,12 @@
 
                 h3:nth-child(2)::after {
                     content: "3222";
-                    font-family: "Lutsk Sity", sans-serif;
+                    font-family: "Montserrat", sans-serif;
                 }
 
                 h3:last-child::after {
                     content: "467371";
-                    font-family: "Lutsk Sity", sans-serif;
+                    font-family: "Montserrat", sans-serif;
                 }
             }
 
@@ -57,11 +61,11 @@
                 justify-content: space-between;
                 margin: 0 auto;
                 padding: 0;
-                width: 70vw;
-                height: 70vh;
+                width: 90vw;
+                height: 75vh;
 
                 .graph {
-                    flex: 6.5;
+                    flex: 3;
                     display: flex;
                     justify-content: center;
                     align-items: center;
@@ -94,7 +98,7 @@
                         justify-content: center;
                         align-items: center;
                         color: #7209b7;
-                        font-family: "Steamy", sans-serif;
+                        font-family: "Montserrat", sans-serif;
                     }
 
                     form {
@@ -104,7 +108,6 @@
                         row-gap: 2vh;
                         width: 80%;
                         height: 40%;
-                        padding-bottom: 5%;
 
                         label {
                             display: flex;
@@ -112,7 +115,7 @@
                             justify-content: space-around;
                             height: 100%;
                             font-size: 20px;
-                            font-family: "Steamy", sans-serif;
+                            font-family: "Montserrat", sans-serif;
                             color: #7209b7;
 
                             select, input[type="text"] {
@@ -149,7 +152,7 @@
                             p {
                                 display: flex;
                                 align-items: center;
-                                font-family: "Steamy", sans-serif;
+                                font-family: "Montserrat", sans-serif;
                                 margin: 0;
                                 color: #7209b7;
                                 font-size: 20px;
@@ -165,7 +168,7 @@
                                     flex-direction: row;
                                     align-items: center;
                                     justify-content: center;
-                                    font-family: "Lutsk Sity", sans-serif;
+                                    font-family: "Montserrat", sans-serif;
                                     background-color: white;
                                     height: 100%;
                                     width: 15%;
@@ -201,7 +204,7 @@
                             border-radius: 10px;
                             box-shadow: 0 0 5px 2px #b8c0ff;
                             color: white;
-                            font-family: "Steamy", sans-serif;
+                            font-family: "Montserrat", sans-serif;
                             font-size: 20px;
                             transition: all 0.3s;
                         }
@@ -213,6 +216,24 @@
                     }
 
                     .result {
+                        display: flex;
+                        gap: 1vh;
+                        height: 30%;
+                        flex-direction: column;
+                        align-items: center;
+                        overflow: scroll;
+                        width: 90%;
+
+                        #table {
+                            tr {
+                                td {
+                                    font-family: "Montserrat", sans-serif;
+                                    text-align: center;
+                                    border: solid 2px #b8c0ff;
+                                    background-color: white;
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -296,7 +317,7 @@
         </section>
         <section class="form">
             <h2>Входные данные</h2>
-            <form action="" method="post">
+            <form action="" method="post" id="inputForm">
                 <label for="x_change">Изменение Х:
                     <select id="x_change">
                         <option value="-2">-2</option>
@@ -317,26 +338,36 @@
                     <p>Изменение R:</p>
                     <div class="inputs">
                         <label for="r_change_1">1
-                            <input required checked name="r_change" type="radio" id="r_change_1">
+                            <input required checked name="r_change" value="1" type="radio" id="r_change_1">
                         </label>
                         <label for="r_change_2">2
-                            <input name="r_change" type="radio" id="r_change_2">
+                            <input name="r_change" value="2" type="radio" id="r_change_2">
                         </label>
                         <label for="r_change_3">3
-                            <input name="r_change" type="radio" id="r_change_3">
+                            <input name="r_change" value="3" type="radio" id="r_change_3">
                         </label>
                         <label for="r_change_4">4
-                            <input name="r_change" type="radio" id="r_change_4">
+                            <input name="r_change" value="4" type="radio" id="r_change_4">
                         </label>
                         <label for="r_change_5">5
-                            <input name="r_change" type="radio" id="r_change_5">
+                            <input name="r_change" value="5" type="radio" id="r_change_5">
                         </label>
                     </div>
                 </div>
                 <input type="submit" value="Определить">
             </form>
+            <h2>Результат</h2>
             <div class="result">
-                <h2>Результат</h2>
+                <table id="table">
+                    <tr>
+                        <th>Коорд. X</th>
+                        <th>Коорд. Y</th>
+                        <th>Радиус R</th>
+                        <th>Факт попадания в область</th>
+                        <th>Текущее время</th>
+                        <th>Время выполнения скрипта (ms)</th>
+                    </tr>
+                </table>
             </div>
         </section>
     </main>

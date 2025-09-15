@@ -1,5 +1,4 @@
 import com.fastcgi.FCGIInterface;
-
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.ByteBuffer;
@@ -8,8 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
 public class Server {
-    private static final String RESPONSE_TEMPLATE = "Content-Type: application/json\nContent-Length: %d\n\n%s";
-
+    private static final String RESPONSE_TEMPLATE = "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: %d\r\n\r\n%s";
 
     public static void main(String[] args) {
         FCGIInterface fcgi = new FCGIInterface();
@@ -36,9 +34,11 @@ public class Server {
                             "\"result\": " + isHit(x, y, r) + ", " +
                             "\"currentTime\": \"" + dtf.format(java.time.LocalDateTime.now()) + "\", " +
                             "\"executionTime\": \"" + (endTime - startTime) + " ms\"}");
-                } else sendResponse("{\"error\": \"invalid data\"}");
+                } else {
+                    sendResponse("{\"error\": \"invalid data\"}");
+                }
             } catch (Exception e) {
-                sendResponse(String.format("{\"error\": \"%s\"}", e));
+                sendResponse(String.format("{\"error\": \"%s\"}", e.getMessage()));
             }
         }
     }
@@ -59,45 +59,50 @@ public class Server {
     }
 
     private static HashMap<String, String> parse(String queryString) {
-
         HashMap<String, String> map = new HashMap<>();
-
         if (queryString == null || queryString.isEmpty()) return map;
-        queryString = queryString.substring(1, queryString.length() - 1); // удалить скобки
-        String[] pairs = queryString.split(",");
 
+        // Убедитесь, что строка действительно имеет скобки
+        if (queryString.startsWith("{") && queryString.endsWith("}")) {
+            queryString = queryString.substring(1, queryString.length() - 1);
+        }
+
+        String[] pairs = queryString.split(",");
         for (String pair : pairs) {
             String[] keyValue = pair.split(":");
-            map.put(
-                    URLDecoder.decode(
-                            keyValue[0].replaceAll("\"", ""),
-                            StandardCharsets.UTF_8
-                    ),
-                    URLDecoder.decode(
-                            keyValue[1].replaceAll("\"", ""),
-                            StandardCharsets.UTF_8
-                    )
-            );
+            if (keyValue.length == 2) {
+                map.put(
+                        URLDecoder.decode(keyValue[0].replaceAll("\"", "").trim(), StandardCharsets.UTF_8),
+                        URLDecoder.decode(keyValue[1].replaceAll("\"", "").trim(), StandardCharsets.UTF_8)
+                );
+            }
         }
         return map;
     }
 
     private static void sendResponse(String json) {
-        System.out.printf(
-                RESPONSE_TEMPLATE + "%n",
-                json.getBytes(StandardCharsets.UTF_8).length,
-                json
-        );
+        try {
+            String response = String.format(
+                    RESPONSE_TEMPLATE,
+                    json.getBytes(StandardCharsets.UTF_8).length,
+                    json
+            );
+            // ВАЖНО: Пишем в выходной поток FastCGI, а не в System.out!
+            FCGIInterface.request.outStream.write(response.getBytes(StandardCharsets.UTF_8));
+            FCGIInterface.request.outStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static boolean isHit(float x, float y, int R) {
         if (x >= 0 && y >= 0)
-            return Math.pow(x, 2) + Math.pow(y, 2) <= Math.pow(R * 0.5, 2); //I quarter
+            return Math.pow(x, 2) + Math.pow(y, 2) <= Math.pow(R * 0.5, 2);
         if (x < 0 && y > 0)
-            return Math.abs(x) + y <= R; //II quarter
+            return Math.abs(x) + y <= R;
         if (x <= 0 && y <= 0)
-            return x >= -R && y >= -R; //III quarter
-        return false; //IV quarter (otherwise)
+            return x >= -R && y >= -R;
+        return false;
     }
 
     public static boolean validateX(float x) {
