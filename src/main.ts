@@ -1,40 +1,48 @@
-const yChange = document.getElementById("y_change");
-const xChange = document.getElementById("x_change");
-const table = document.getElementById("table");
-const inputForm = document.getElementById("inputForm")
+import {CalculationInputDto} from "./dto/calculation-input.dto";
+import {CalculationOutputDTO} from "./dto/calculation-output.dto";
+
+const yChange = document.getElementById("y_change") as HTMLInputElement;
+const xChange = document.getElementById("x_change") as HTMLInputElement;
+const table = document.getElementById("table") as HTMLElement;
+const inputForm = document.getElementById("inputForm") as HTMLElement;
 let yPrevValue = ""
 
-const validate = (x, y, r) => {
+const validate = (x: number, y: number, r: number) => {
     if (isNaN(x) || isNaN(y) || isNaN(r)) return false
     return (-2 <= x && x <= 2 &&
         -5 < y && y < 3 &&
-        1 <= r <= 5
+        1 <= r && r <= 5
     )
 }
 
-const send = async (x, y, r) => {
-    const jsonStr = JSON.stringify({
+const send = async (x: number, y: number, r: number) => {
+    const calculationInputDto: CalculationInputDto = {
         x: x,
         y: y,
-        r: r
-    })
+        r: r,
+    }
+    const calculationInputDtoStr = JSON.stringify(calculationInputDto)
 
     const response = await fetch("http://localhost:46737/fcgi-bin/", {
         method: "POST",
         headers: {
             "Content-Type": 'application/json',
         },
-        body: jsonStr,
+        body: calculationInputDtoStr,
     })
+
     const json = await response.json()
-    let localData = JSON.parse(localStorage.getItem('localData'))
-    if (localData) localData.push(json)
-    else localData = [json]
+    const localDataJson = localStorage.getItem('localData')
+    let localData
+    if (localDataJson !== null) {
+        localData = JSON.parse(localDataJson)
+        localData.push(json)
+    } else localData = [json]
     localStorage.setItem('localData', JSON.stringify(localData))
     parseResults()
 }
 
-const addRow = (json) => {
+const addRow = (json: CalculationOutputDTO) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
             <td>${json.x}</td>
@@ -57,8 +65,11 @@ const parseResults= () =>  {
             <th>Текущее время</th>
             <th>Время выполнения скрипта (ms)</th>
         </tr>`
-    const results = JSON.parse(localStorage.getItem('localData'))
-    if (results) results.forEach(result => addRow(result))
+    const localDataJson = localStorage.getItem('localData')
+    if (localDataJson !== null) {
+        const results = JSON.parse(localDataJson)
+        if (results) results.forEach((result: CalculationOutputDTO) => addRow(result))
+    }
 }
 
 window.onload = () => parseResults()
@@ -75,14 +86,12 @@ yChange.addEventListener("input", () => {
 
 inputForm.addEventListener("submit", async (e) => {
     e.preventDefault()
-    const rChange = document.querySelector('input[name="r_change"]:checked')
+    const rChange = document.querySelector('input[name="r_change"]:checked') as HTMLInputElement
     const x = parseFloat(xChange.value)
     const y = parseFloat(yChange.value)
     const r = parseInt(rChange.value)
 
-    if (validate(x, y, r))
-        await send(x, y, r)
-    else console.log("hi")
+    if (validate(x, y, r)) await send(x, y, r)
 })
 
 
