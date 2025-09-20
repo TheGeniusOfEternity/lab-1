@@ -12,7 +12,7 @@ public class Server {
     public static void main(String[] args) {
         FCGIInterface fcgi = new FCGIInterface();
         while (fcgi.FCGIaccept() >= 0) {
-            var startTime = System.currentTimeMillis();
+            long startTime = System.currentTimeMillis();
             try {
                 String request = getRequest();
                 HashMap<String, String> params = parse(request);
@@ -23,10 +23,10 @@ public class Server {
 
                 float x = Float.parseFloat(params.get("x"));
                 float y = Float.parseFloat(params.get("y"));
-                int r = Integer.parseInt(params.get("r"));
+                int   r = Integer.parseInt(params.get("r"));
 
                 if (validateX(x) && validateY(y) && validateR(r)) {
-                    var endTime = System.currentTimeMillis();
+                    long endTime = System.currentTimeMillis();
                     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
                     sendResponse("{\"x\": " + x + ", " +
                             "\"y\": " + y + ", " +
@@ -62,7 +62,6 @@ public class Server {
         HashMap<String, String> map = new HashMap<>();
         if (queryString == null || queryString.isEmpty()) return map;
 
-        // Убедитесь, что строка действительно имеет скобки
         if (queryString.startsWith("{") && queryString.endsWith("}")) {
             queryString = queryString.substring(1, queryString.length() - 1);
         }
@@ -87,11 +86,10 @@ public class Server {
                     json.getBytes(StandardCharsets.UTF_8).length,
                     json
             );
-            // ВАЖНО: Пишем в выходной поток FastCGI, а не в System.out!
             FCGIInterface.request.outStream.write(response.getBytes(StandardCharsets.UTF_8));
             FCGIInterface.request.outStream.flush();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 

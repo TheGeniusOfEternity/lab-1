@@ -1,6 +1,5 @@
 const yChange = document.getElementById("y_change");
 const xChange = document.getElementById("x_change");
-const rChange = document.querySelector('input[name="r_change"]:checked')
 const table = document.getElementById("table");
 const inputForm = document.getElementById("inputForm")
 let yPrevValue = ""
@@ -76,7 +75,7 @@ yChange.addEventListener("input", () => {
 
 inputForm.addEventListener("submit", async (e) => {
     e.preventDefault()
-
+    const rChange = document.querySelector('input[name="r_change"]:checked')
     const x = parseFloat(xChange.value)
     const y = parseFloat(yChange.value)
     const r = parseInt(rChange.value)
