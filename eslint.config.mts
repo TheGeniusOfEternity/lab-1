@@ -20,7 +20,8 @@ export default defineConfig([
       },
     },
     rules: {
-      "@typescript-eslint/no-unnecessary-type-parameters": "off"
+      "@typescript-eslint/no-unnecessary-type-parameters": "off",
+      "@typescript-eslint/prefer-promise-reject-errors": "off"
     },
   },
 

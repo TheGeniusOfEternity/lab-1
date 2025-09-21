@@ -21,7 +21,7 @@ const send = async (x: number, y: number, r: number) => {
   };
   const calculationInputDtoStr = JSON.stringify(calculationInputDto);
 
-  const response = await fetch('http://localhost:46737/fcgi-bin/', {
+  const response = await fetch('http://localhost:7777/fcgi-bin/', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -53,15 +53,13 @@ const addRow = (json: CalculationOutputDTO) => {
   table.appendChild(tr);
 };
 
-const sendRequest = async (e: Event) => {
-  e.preventDefault();
+const sendRequest = async () => {
   const rChange = document.querySelector(
     'input[name="r_change"]:checked'
   ) as HTMLInputElement;
   const x = parseFloat(xChange.value);
   const y = parseFloat(yChange.value);
   const r = parseInt(rChange.value);
-
   if (validate(x, y, r)) await send(x, y, r);
 }
 
@@ -83,23 +81,25 @@ const parseResults = () => {
   }
 };
 
-window.onload = () => { parseResults() };
+window.onload = () => {
+  parseResults()
+  yChange.addEventListener('input', () => {
+    const regex = /^(-|-?\d|-?\d\.\d{0,3}|)$/;
+    if (
+      (!regex.test(yChange.value) && yChange.value !== '') ||
+      yChange.value === '-0'
+    )
+      yChange.value = yPrevValue;
+    const num = parseFloat(yChange.value);
+    if ((isNaN(num) || -5 >= num || num >= 3) && !yChange.value.match(/^-?$/))
+      yChange.value = yPrevValue;
+    yPrevValue = yChange.value;
+  });
 
-yChange.addEventListener('input', () => {
-  const regex = /^(-|-?\d|-?\d\.\d{0,3}|)$/;
-  if (
-    (!regex.test(yChange.value) && yChange.value !== '') ||
-    yChange.value === '-0'
-  )
-    yChange.value = yPrevValue;
-  const num = parseFloat(yChange.value);
-  if ((isNaN(num) || -5 >= num || num >= 3) && !yChange.value.match(/^-?$/))
-    yChange.value = yPrevValue;
-  yPrevValue = yChange.value;
-});
-
-inputForm.addEventListener('submit', (e: Event) => {
-  void(async () => {
-    await sendRequest(e)
-  })
-});
+  inputForm.addEventListener('submit', (e: Event) => {
+    e.preventDefault();
+    void(async () => {
+      await sendRequest()
+    })()
+  });
+};
