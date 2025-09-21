@@ -25,8 +25,12 @@ module.exports = {
         type: "asset/resource", // copies font files to dist and resolves URLs
       },
       {
-        test: /\.css$/i,
-        use: ["style-loader", "css-loader"], // loads CSS with url() and injects into DOM
+        test: /\.s[ac]ss$/i, // match .scss and .sass files
+        use: [
+          'style-loader', // inject CSS into DOM
+          'css-loader',   // interprets CSS @import and url()
+          'sass-loader',  // compiles Sass to CSS
+        ],
       },
       {
         test: /\.tsx?$/,

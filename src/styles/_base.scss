@@ -1,0 +1,13 @@
+$bg-color: #26023f;
+$text-color: #7209b7;
+$primary-color: #b8c0ff;
+$secondary-color: #e7c6ff;
+$font-stack: 'Montserrat', sans-serif;
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  background-color: $bg-color;
+}

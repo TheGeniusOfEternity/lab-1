@@ -1,5 +1,6 @@
 import { CalculationInputDto } from './src/dto/calculation-input.dto';
 import { CalculationOutputDTO } from './src/dto/calculation-output.dto';
+import "./src/styles/main.scss"
 
 const yChange = document.getElementById('y_change') as HTMLInputElement;
 const xChange = document.getElementById('x_change') as HTMLInputElement;

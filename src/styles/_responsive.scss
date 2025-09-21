@@ -1,0 +1,20 @@
+@media screen and (orientation: portrait) {
+  body,
+  html {
+    main {
+      flex-direction: column;
+      height: 80vh;
+
+      .graph {
+        flex: 4;
+        border-top-right-radius: 15px;
+        border-bottom-left-radius: 0;
+      }
+
+      .form {
+        border-bottom-left-radius: 15px;
+        border-top-right-radius: 0;
+      }
+    }
+  }
+}
