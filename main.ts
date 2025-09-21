@@ -53,6 +53,18 @@ const addRow = (json: CalculationOutputDTO) => {
   table.appendChild(tr);
 };
 
+const sendRequest = async (e: Event) => {
+  e.preventDefault();
+  const rChange = document.querySelector(
+    'input[name="r_change"]:checked'
+  ) as HTMLInputElement;
+  const x = parseFloat(xChange.value);
+  const y = parseFloat(yChange.value);
+  const r = parseInt(rChange.value);
+
+  if (validate(x, y, r)) await send(x, y, r);
+}
+
 const parseResults = () => {
   table.innerHTML = `
         <tr>
@@ -86,14 +98,8 @@ yChange.addEventListener('input', () => {
   yPrevValue = yChange.value;
 });
 
-inputForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const rChange = document.querySelector(
-    'input[name="r_change"]:checked'
-  ) as HTMLInputElement;
-  const x = parseFloat(xChange.value);
-  const y = parseFloat(yChange.value);
-  const r = parseInt(rChange.value);
-
-  if (validate(x, y, r)) await send(x, y, r);
+inputForm.addEventListener('submit', (e: Event) => {
+  void(async () => {
+    await sendRequest(e)
+  })
 });
