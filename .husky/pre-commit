@@ -1,1 +1,4 @@
 npx lint-staged
+
+echo "Husky pre-commit hook running"
+exit 1
