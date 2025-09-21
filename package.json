@@ -1,11 +1,12 @@
 {
   "scripts": {
-    "lint": "eslint 'src/**/*.{js,ts}'",
+    "lint": "eslint 'src/**/*.{js,ts}' main.ts",
     "prettier": "prettier --write 'src/**/*.{js,ts,json,css,md}'",
     "webpack": "webpack --config webpack.config.js",
     "build": "npm run lint && npm run prettier && npm run webpack",
     "start": "webpack serve",
-    "prepare": "husky"
+    "prepare": "husky",
+    "lint-staged": "lint-staged"
   },
   "lint-staged": {
     "*.{js,ts,tsx}": "eslint --fix",

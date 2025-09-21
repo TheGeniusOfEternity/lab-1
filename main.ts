@@ -29,11 +29,11 @@ const send = async (x: number, y: number, r: number) => {
     body: calculationInputDtoStr,
   });
 
-  const json = await response.json();
+  const json: CalculationOutputDTO = await response.json() as CalculationOutputDTO;
   const localDataJson = localStorage.getItem('localData');
   let localData: CalculationOutputDTO[];
   if (localDataJson !== null) {
-    localData = JSON.parse(localDataJson);
+    localData = JSON.parse(localDataJson) as CalculationOutputDTO[];
     localData.push(json);
   } else localData = [json];
   localStorage.setItem('localData', JSON.stringify(localData));
@@ -43,9 +43,9 @@ const send = async (x: number, y: number, r: number) => {
 const addRow = (json: CalculationOutputDTO) => {
   const tr = document.createElement('tr');
   tr.innerHTML = `
-            <td>${json.x}</td>
-            <td>${json.y}</td>
-            <td>${json.r}</td>
+            <td>${json.x.toString()}</td>
+            <td>${json.y.toString()}</td>
+            <td>${json.r.toString()}</td>
             <td>${json.result ? 'Успех' : 'Провал'}</td>
             <td>${json.currentTime ? json.currentTime : 'Неизвестно'}</td>
             <td>${json.executionTime ? json.executionTime : 'Неизвестно'}</td>
@@ -65,13 +65,13 @@ const parseResults = () => {
         </tr>`;
   const localDataJson = localStorage.getItem('localData');
   if (localDataJson !== null) {
-    const results = JSON.parse(localDataJson);
+    const results: CalculationOutputDTO[] | null = JSON.parse(localDataJson) as CalculationOutputDTO[] | null;
     if (results)
-      results.forEach((result: CalculationOutputDTO) => addRow(result));
+      results.forEach((result: CalculationOutputDTO) => { addRow(result) });
   }
 };
 
-window.onload = () => parseResults();
+window.onload = () => { parseResults() };
 
 yChange.addEventListener('input', () => {
   const regex = /^(-|-?\d|-?\d\.\d{0,3}|)$/;
