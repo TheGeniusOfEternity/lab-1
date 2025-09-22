@@ -11,7 +11,10 @@ export class CalculationStorageUtil {
       openRequest.onupgradeneeded = () => {
         const db = openRequest.result;
         if (!db.objectStoreNames.contains('calculations')) {
-          db.createObjectStore('calculations', { keyPath: 'id', autoIncrement: true });
+          db.createObjectStore('calculations', {
+            keyPath: 'id',
+            autoIncrement: true,
+          });
         }
       };
 
@@ -51,15 +54,16 @@ export class CalculationStorageUtil {
       if (this.db !== null) {
         const transaction = this.db.transaction('calculations', 'readwrite');
         const store = transaction.objectStore('calculations');
-        const query: IDBRequest<CalculationOutputDTO[]> = store.getAll() as IDBRequest<CalculationOutputDTO[]>
+        const query: IDBRequest<CalculationOutputDTO[]> =
+          store.getAll() as IDBRequest<CalculationOutputDTO[]>;
         query.onsuccess = () => {
-          resolve(query.result)
-        }
+          resolve(query.result);
+        };
       } else {
         console.error('Database connection was already closed');
-        reject([])
+        reject([]);
       }
-    })
+    });
   }
 
   public closeConnection() {

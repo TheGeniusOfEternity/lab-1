@@ -17,7 +17,7 @@ export class ApiResolverUtil {
   }
 
   public async request<U, R>(url: string, method: string, data: U): Promise<R> {
-    const fullUrl = `${this.endpoint}/${url}`;
+    const fullUrl = `${this.endpoint}/${url}/`;
     const config: RequestConfig<U> = {
       url: fullUrl,
       method,
@@ -33,8 +33,12 @@ export class ApiResolverUtil {
     } catch (error: unknown) {
       if (axios.isAxiosError<ErrorResponse>(error)) {
         return {
-          status: error.response?.data.status ? error.response.data.status : undefined,
-          message: error.response?.data.message ? error.response.data.message : undefined,
+          status: error.response?.data.status
+            ? error.response.data.status
+            : undefined,
+          message: error.response?.data.message
+            ? error.response.data.message
+            : undefined,
         } as R;
       } else {
         return {

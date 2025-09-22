@@ -4,7 +4,7 @@
     "prettier": "prettier --write 'src/**/*.{js,ts,json,css,md}'",
     "webpack": "webpack --config webpack.config.js",
     "build": "npm run lint && npm run prettier && npm run webpack",
-    "start": "webpack serve",
+    "start": "webpack serve --mode development",
     "prepare": "husky",
     "lint-staged": "lint-staged"
   },

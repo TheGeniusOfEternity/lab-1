@@ -31,7 +31,7 @@ const send = async (x: number, y: number, r: number) => {
       calculationInputDto
     )
   if (response.message) {
-    await parseResults();
+    await parseResults(response.message);
   }
 };
 
@@ -59,6 +59,15 @@ const sendRequest = async () => {
 }
 
 const parseResults = async (calculation: CalculationOutputDTO | undefined = undefined) => {
+  table.innerHTML = `
+        <tr>
+            <th>Коорд. X</th>
+            <th>Коорд. Y</th>
+            <th>Радиус R</th>
+            <th>Факт попадания в область</th>
+            <th>Текущее время</th>
+            <th>Время выполнения скрипта (ms)</th>
+        </tr>`;
   const calculationStorageUtil = new CalculationStorageUtil(
     "calculations_db",
     1
@@ -72,25 +81,8 @@ const parseResults = async (calculation: CalculationOutputDTO | undefined = unde
   }
   for (const calculation of localData) {
     await calculationStorageUtil.addCalculation(calculation)
+    addRow(calculation)
   }
-  table.innerHTML = `
-        <tr>
-            <th>Коорд. X</th>
-            <th>Коорд. Y</th>
-            <th>Радиус R</th>
-            <th>Факт попадания в область</th>
-            <th>Текущее время</th>
-            <th>Время выполнения скрипта (ms)</th>
-        </tr>`;
-  const localDataJson = localStorage.getItem('localData');
-  if (localDataJson !== null) {
-    const results: CalculationOutputDTO[] | null = JSON.parse(localDataJson) as CalculationOutputDTO[] | null;
-    if (results)
-      results.forEach((result: CalculationOutputDTO) => {
-        addRow(result)
-      });
-  }
-
 };
 
 window.onload = async () => {
