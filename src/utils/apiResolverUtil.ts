@@ -33,8 +33,8 @@ export class ApiResolverUtil {
     } catch (error: unknown) {
       if (axios.isAxiosError<ErrorResponse>(error)) {
         return {
-          status: error.response?.data.status,
-          message: error.response?.data.message,
+          status: error.response?.data.status ? error.response.data.status : undefined,
+          message: error.response?.data.message ? error.response.data.message : undefined,
         } as R;
       } else {
         return {

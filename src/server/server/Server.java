@@ -7,13 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
 public class Server {
-    private static final String RESPONSE_TEMPLATE =
-            "HTTP/1.1 200 OK\r\n" +
-                    "Content-Type: application/json\r\n" +
-                    "Access-Control-Allow-Origin: *\r\n" +
-                    "Access-Control-Allow-Methods: GET, POST, OPTIONS\r\n" +
-                    "Access-Control-Allow-Headers: Content-Type, Authorization\r\n" +
-                    "Content-Length: %d\r\n\r\n%s";
+    private static final String RESPONSE_TEMPLATE = "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: %d\r\n\r\n%s";
 
     public static void main(String[] args) {
         FCGIInterface fcgi = new FCGIInterface();

@@ -1,6 +1,9 @@
 import { CalculationInputDto } from './src/dto/calculation-input.dto';
 import { CalculationOutputDTO } from './src/dto/calculation-output.dto';
 import "./src/styles/main.scss"
+import {ApiResolverUtil} from "./src/utils/apiResolverUtil";
+import {CommonOutputDto} from "./src/dto/common-output.dto";
+import {CalculationStorageUtil} from "./src/utils/calculationStorageUtil";
 
 const yChange = document.getElementById('y_change') as HTMLInputElement;
 const xChange = document.getElementById('x_change') as HTMLInputElement;
@@ -14,30 +17,22 @@ const validate = (x: number, y: number, r: number) => {
 };
 
 const send = async (x: number, y: number, r: number) => {
+  const apiResolverUtil = new ApiResolverUtil('http://localhost:7777')
   const calculationInputDto: CalculationInputDto = {
     x: x,
     y: y,
     r: r,
   };
-  const calculationInputDtoStr = JSON.stringify(calculationInputDto);
-
-  const response = await fetch('http://localhost:7777/fcgi-bin/', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: calculationInputDtoStr,
-  });
-
-  const json: CalculationOutputDTO = await response.json() as CalculationOutputDTO;
-  const localDataJson = localStorage.getItem('localData');
-  let localData: CalculationOutputDTO[];
-  if (localDataJson !== null) {
-    localData = JSON.parse(localDataJson) as CalculationOutputDTO[];
-    localData.push(json);
-  } else localData = [json];
-  localStorage.setItem('localData', JSON.stringify(localData));
-  parseResults();
+  // const calculationInputDtoStr = JSON.stringify(calculationInputDto);
+  const response = await apiResolverUtil
+    .request<CalculationInputDto, CommonOutputDto<CalculationOutputDTO | null>>(
+      "fcgi-bin",
+      "POST",
+      calculationInputDto
+    )
+  if (response.message) {
+    await parseResults();
+  }
 };
 
 const addRow = (json: CalculationOutputDTO) => {
@@ -63,7 +58,21 @@ const sendRequest = async () => {
   if (validate(x, y, r)) await send(x, y, r);
 }
 
-const parseResults = () => {
+const parseResults = async (calculation: CalculationOutputDTO | undefined = undefined) => {
+  const calculationStorageUtil = new CalculationStorageUtil(
+    "calculations_db",
+    1
+  );
+  await calculationStorageUtil.ready
+  let localData = await calculationStorageUtil.loadCalculations()
+  if (calculation) {
+    if (localData.length > 0) {
+      localData.push(calculation);
+    } else localData = [calculation];
+  }
+  for (const calculation of localData) {
+    await calculationStorageUtil.addCalculation(calculation)
+  }
   table.innerHTML = `
         <tr>
             <th>Коорд. X</th>
@@ -77,12 +86,15 @@ const parseResults = () => {
   if (localDataJson !== null) {
     const results: CalculationOutputDTO[] | null = JSON.parse(localDataJson) as CalculationOutputDTO[] | null;
     if (results)
-      results.forEach((result: CalculationOutputDTO) => { addRow(result) });
+      results.forEach((result: CalculationOutputDTO) => {
+        addRow(result)
+      });
   }
+
 };
 
-window.onload = () => {
-  parseResults()
+window.onload = async () => {
+  await parseResults()
   yChange.addEventListener('input', () => {
     const regex = /^(-|-?\d|-?\d\.\d{0,3}|)$/;
     if (
