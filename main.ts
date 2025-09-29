@@ -17,6 +17,7 @@ const validate = (x: number, y: number, r: number) => {
 };
 
 const send = async (x: number, y: number, r: number) => {
+  console.log(await fetch("http://localhost:7777/fcgi-bin"))
   const apiResolverUtil = new ApiResolverUtil('http://localhost:7777')
   const calculationInputDto: CalculationInputDto = {
     x: x,
