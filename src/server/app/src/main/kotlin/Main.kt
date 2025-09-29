@@ -37,6 +37,7 @@ object Server {
                 if (validateX(calculationInput.x) && validateY(calculationInput.y) && validateR(calculationInput.r)) {
                     val endTime = System.nanoTime()
                     val dtf = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")
+                    val executionTime = (endTime - startTime) / 1_000_000.0
                     sendResponse(mapper.writeValueAsString(CommonOutputDto(
                         status = 200,
                         message = CalculationOutputDto(
@@ -49,7 +50,7 @@ object Server {
                                 calculationInput.r
                             ),
                             currentTime = dtf.format(LocalDateTime.now()),
-                            executionTime = "${(endTime - startTime) / 1000000} ms"
+                            executionTime = "%.2f ms".format(executionTime)
                         )
                     )))
                 } else {
